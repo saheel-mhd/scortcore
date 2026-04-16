@@ -1,0 +1,64 @@
+{
+  "metrics": [
+    {
+      "id": "customers",
+      "label": "Active customers",
+      "value": "1,284",
+      "change": "+8.2%",
+      "trend": "up"
+    },
+    {
+      "id": "pipeline",
+      "label": "Open deals",
+      "value": "$94,500",
+      "change": "+4.6%",
+      "trend": "up"
+    },
+    {
+      "id": "support",
+      "label": "Pending tickets",
+      "value": "37",
+      "change": "-11.3%",
+      "trend": "down"
+    },
+    {
+      "id": "conversion",
+      "label": "Lead conversion",
+      "value": "24.8%",
+      "change": "+1.2%",
+      "trend": "up"
+    }
+  ],
+  "activities": [
+    {
+      "id": "activity-1",
+      "title": "New enterprise lead assigned",
+      "description": "Nadia assigned Acme Holdings to the enterprise sales queue.",
+      "time": "5m ago"
+    },
+    {
+      "id": "activity-2",
+      "title": "Ticket priority updated",
+      "description": "Support escalated three onboarding blockers to high priority.",
+      "time": "18m ago"
+    },
+    {
+      "id": "activity-3",
+      "title": "Deal moved to negotiation",
+      "description": "The Northwind renewal deal advanced to the negotiation stage.",
+      "time": "42m ago"
+    }
+  ],
+  "focusItems": [
+    {
+      "id": "focus-1",
+      "title": "Review lead assignment rules",
+      "description": "Confirm regional ownership logic before importing the next CRM batch."
+    },
+    {
+      "id": "focus-2",
+      "title": "Prepare sales pipeline widgets",
+      "description": "Next step is building reusable charts and stage breakdown modules."
+    }
+  ]
+}
