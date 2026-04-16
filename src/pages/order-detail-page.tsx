@@ -81,25 +81,35 @@ export default function AdminOrderDetailPage() {
               description={`${query.data.items.length} line${query.data.items.length === 1 ? '' : 's'}`}
             >
               <ul className="flex flex-col divide-y divide-white/5 text-sm">
-                {query.data.items.map((item) => (
-                  <li
-                    key={item.productId}
-                    className="flex items-start justify-between gap-4 py-3"
-                  >
-                    <div className="flex min-w-0 items-start gap-3">
-                      <Package className="mt-0.5 size-4 text-slate-500" />
-                      <div className="min-w-0">
-                        <p className="truncate font-medium text-white">{item.name}</p>
-                        <p className="text-xs text-slate-500">
-                          SKU {item.sku} · {item.quantity} × ${currencyFormatter.format(item.price)}
-                        </p>
+                {query.data.items.map((item, index) => {
+                  const price = item.unitPrice ?? item.price ?? 0
+                  return (
+                    <li
+                      key={`${item.productVariantId ?? item.productId}-${index}`}
+                      className="flex items-start justify-between gap-4 py-3"
+                    >
+                      <div className="flex min-w-0 items-start gap-3">
+                        <Package className="mt-0.5 size-4 text-slate-500" />
+                        <div className="min-w-0">
+                          <p className="truncate font-medium text-white">
+                            {item.name}
+                            {item.unitShortName ? (
+                              <span className="ml-2 rounded bg-white/5 px-1.5 py-0.5 text-xs text-slate-300">
+                                {item.unitShortName}
+                              </span>
+                            ) : null}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            SKU {item.sku} · {item.quantity} × ${currencyFormatter.format(price)}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <span className="tabular-nums text-white">
-                      ${currencyFormatter.format(item.price * item.quantity)}
-                    </span>
-                  </li>
-                ))}
+                      <span className="tabular-nums text-white">
+                        ${currencyFormatter.format(price * item.quantity)}
+                      </span>
+                    </li>
+                  )
+                })}
               </ul>
 
               <div className="mt-4 flex flex-col gap-2 border-t border-white/5 pt-4 text-sm">

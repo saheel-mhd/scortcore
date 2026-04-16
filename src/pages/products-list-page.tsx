@@ -6,7 +6,6 @@ import { DeleteProductDialog } from '@/modules/products/components/delete-produc
 import { useProducts } from '@/modules/products/hooks/use-products'
 import { ProductsTable } from '@/modules/products/components/products-table'
 import { ProductsToolbar } from '@/modules/products/components/products-toolbar'
-import { StockAdjustDialog } from '@/modules/products/components/stock-adjust-dialog'
 import type {
   Product,
   ProductListParams,
@@ -39,7 +38,6 @@ export default function ProductsListPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const params = useMemo(() => parseParams(searchParams), [searchParams])
 
-  const [stockProduct, setStockProduct] = useState<Product | null>(null)
   const [deleteProduct, setDeleteProduct] = useState<Product | null>(null)
 
   const query = useProducts(params)
@@ -93,7 +91,6 @@ export default function ProductsListPage() {
           <div className="flex flex-col gap-4">
             <ProductsTable
               deletingId={deleteProduct?.id ?? null}
-              onAdjustStock={setStockProduct}
               onDelete={setDeleteProduct}
               products={query.data.products}
             />
@@ -108,7 +105,6 @@ export default function ProductsListPage() {
         ) : null}
       </PanelCard>
 
-      <StockAdjustDialog product={stockProduct} onClose={() => setStockProduct(null)} />
       <DeleteProductDialog product={deleteProduct} onClose={() => setDeleteProduct(null)} />
     </div>
   )

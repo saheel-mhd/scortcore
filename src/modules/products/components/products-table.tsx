@@ -1,4 +1,4 @@
-import { Boxes, Pencil, Trash2 } from 'lucide-react'
+import { Pencil, Trash2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 import type { Product } from '@/modules/products/types/product.types'
@@ -7,7 +7,6 @@ import { Button } from '@/ui/button'
 
 type Props = {
   products: Product[]
-  onAdjustStock: (product: Product) => void
   onDelete: (product: Product) => void
   deletingId: string | null
 }
@@ -17,7 +16,11 @@ const currencyFormatter = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 2,
 })
 
-export function ProductsTable({ products, onAdjustStock, onDelete, deletingId }: Props) {
+function totalStock(product: Product): number {
+  return product.variants.reduce((sum, variant) => sum + variant.stock, 0)
+}
+
+export function ProductsTable({ products, onDelete, deletingId }: Props) {
   if (products.length === 0) {
     return (
       <div className="flex min-h-40 items-center justify-center rounded-2xl border border-dashed border-white/10 bg-slate-950/40 p-8 text-center">
@@ -36,7 +39,8 @@ export function ProductsTable({ products, onAdjustStock, onDelete, deletingId }:
             <Th>Name</Th>
             <Th>SKU</Th>
             <Th className="text-right">Price</Th>
-            <Th className="text-right">Stock</Th>
+            <Th className="text-right">Total stock</Th>
+            <Th>Sizes</Th>
             <Th>Status</Th>
             <Th className="text-right">Actions</Th>
           </tr>
@@ -44,6 +48,7 @@ export function ProductsTable({ products, onAdjustStock, onDelete, deletingId }:
         <tbody className="divide-y divide-white/5 bg-slate-950/40">
           {products.map((product) => {
             const isDeleting = deletingId === product.id
+            const total = totalStock(product)
 
             return (
               <tr key={product.id} className="text-slate-200">
@@ -61,13 +66,33 @@ export function ProductsTable({ products, onAdjustStock, onDelete, deletingId }:
                     {product.sku}
                   </code>
                 </Td>
-                <Td className="text-right tabular-nums">{currencyFormatter.format(product.price)}</Td>
                 <Td className="text-right tabular-nums">
-                  <span
-                    className={product.stock === 0 ? 'text-red-300' : undefined}
-                  >
-                    {product.stock}
-                  </span>
+                  {currencyFormatter.format(product.price)}
+                </Td>
+                <Td className="text-right tabular-nums">
+                  <span className={total === 0 ? 'text-red-300' : undefined}>{total}</span>
+                </Td>
+                <Td>
+                  <div className="flex flex-wrap gap-1">
+                    {product.variants.length === 0 ? (
+                      <span className="text-xs text-slate-500">—</span>
+                    ) : (
+                      product.variants.map((variant) => (
+                        <code
+                          key={variant.id}
+                          className={[
+                            'rounded px-1.5 py-0.5 text-xs',
+                            variant.stock === 0
+                              ? 'bg-red-500/10 text-red-300'
+                              : 'bg-white/5 text-slate-300',
+                          ].join(' ')}
+                          title={`${variant.unit.name} · stock ${variant.stock}`}
+                        >
+                          {variant.unit.shortName}
+                        </code>
+                      ))
+                    )}
+                  </div>
                 </Td>
                 <Td>
                   <span
@@ -83,14 +108,6 @@ export function ProductsTable({ products, onAdjustStock, onDelete, deletingId }:
                 </Td>
                 <Td className="text-right">
                   <div className="inline-flex items-center gap-1">
-                    <Button
-                      aria-label={`Adjust stock for ${product.name}`}
-                      onClick={() => onAdjustStock(product)}
-                      size="icon-sm"
-                      variant="ghost"
-                    >
-                      <Boxes />
-                    </Button>
                     <Link
                       aria-label={`Edit ${product.name}`}
                       to={routePaths.productsEdit.replace(':id', product.id)}

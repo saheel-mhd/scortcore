@@ -1,11 +1,9 @@
-import { useState } from 'react'
-import { ArrowLeft, Boxes } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 
 import { extractErrorMessage } from '@/api/client'
 import { usePageTitle } from '@/hooks/use-page-title'
 import { ProductForm } from '@/modules/products/components/product-form'
-import { StockAdjustDialog } from '@/modules/products/components/stock-adjust-dialog'
 import { useProduct } from '@/modules/products/hooks/use-product'
 import { useUpdateProduct } from '@/modules/products/hooks/use-update-product'
 import { routePaths } from '@/routes/paths'
@@ -19,7 +17,6 @@ export default function ProductsEditPage() {
 
   const query = useProduct(id)
   const updateMutation = useUpdateProduct()
-  const [stockDialogOpen, setStockDialogOpen] = useState(false)
 
   usePageTitle(query.data ? `Edit · ${query.data.name}` : 'Edit product')
 
@@ -32,7 +29,7 @@ export default function ProductsEditPage() {
       <PageHeader
         badge="Catalog"
         title="Edit product"
-        description="Update catalog details. Stock changes go through the inventory dialog."
+        description="Update catalog details and per-size stock."
         action={
           <Link to={routePaths.products}>
             <Button variant="outline">
@@ -54,39 +51,26 @@ export default function ProductsEditPage() {
           </p>
         </PanelCard>
       ) : query.data ? (
-        <>
-          <PanelCard
-            title={query.data.name}
-            description={`SKU ${query.data.sku} · ${query.data.isActive ? 'Active' : 'Inactive'}`}
-            action={
-              <Button onClick={() => setStockDialogOpen(true)} variant="outline">
-                <Boxes />
-                Adjust stock ({query.data.stock})
-              </Button>
-            }
-          >
-            <ProductForm
-              error={updateMutation.error}
-              isSubmitting={updateMutation.isPending}
-              mode="edit"
-              onSubmit={(input) => {
-                updateMutation.mutate(
-                  { id, input },
-                  {
-                    onSuccess: () => navigate(routePaths.products),
-                  }
-                )
-              }}
-              product={query.data}
-              submitLabel="Save changes"
-            />
-          </PanelCard>
-
-          <StockAdjustDialog
-            onClose={() => setStockDialogOpen(false)}
-            product={stockDialogOpen ? query.data : null}
+        <PanelCard
+          title={query.data.name}
+          description={`SKU ${query.data.sku} · ${query.data.isActive ? 'Active' : 'Inactive'}`}
+        >
+          <ProductForm
+            error={updateMutation.error}
+            isSubmitting={updateMutation.isPending}
+            mode="edit"
+            onSubmit={(input) => {
+              updateMutation.mutate(
+                { id, input },
+                {
+                  onSuccess: () => navigate(routePaths.products),
+                }
+              )
+            }}
+            product={query.data}
+            submitLabel="Save changes"
           />
-        </>
+        </PanelCard>
       ) : null}
     </div>
   )

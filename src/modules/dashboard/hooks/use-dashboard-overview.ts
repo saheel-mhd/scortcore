@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { dashboardOverviewQueryOptions } from '@/modules/dashboard/api/get-dashboard-overview'
+import { dashboardSummaryQueryOptions } from '@/modules/dashboard/api/get-dashboard-overview'
 
-export function useDashboardOverview() {
-  return useQuery(dashboardOverviewQueryOptions)
+export function useDashboardSummary() {
+  return useQuery(dashboardSummaryQueryOptions)
 }

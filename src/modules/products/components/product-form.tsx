@@ -2,10 +2,13 @@ import { useState, type FormEvent } from 'react'
 import { Loader2, Save } from 'lucide-react'
 
 import { extractErrorMessage } from '@/api/client'
+import { ProductImageFields } from '@/modules/products/components/product-image-fields'
+import { ProductVariantsField } from '@/modules/products/components/product-variants-field'
 import type {
   CreateProductInput,
   Product,
   UpdateProductInput,
+  VariantInput,
 } from '@/modules/products/types/product.types'
 import { Button } from '@/ui/button'
 
@@ -39,34 +42,49 @@ export function ProductForm(props: Props) {
   const [slug, setSlug] = useState(initial?.slug ?? '')
   const [sku, setSku] = useState(initial?.sku ?? '')
   const [description, setDescription] = useState(initial?.description ?? '')
-  const [price, setPrice] = useState(
-    initial ? String(initial.price) : ''
-  )
-  const [stock, setStock] = useState(initial ? String(initial.stock) : '0')
+  const [price, setPrice] = useState(initial ? String(initial.price) : '')
   const [isActive, setIsActive] = useState(initial?.isActive ?? true)
+  const [cardImage, setCardImage] = useState(initial?.cardImage ?? '')
+  const [mainImage, setMainImage] = useState(initial?.mainImage ?? '')
+  const [galleryImages, setGalleryImages] = useState<string[]>(initial?.galleryImages ?? [])
+  const [variants, setVariants] = useState<VariantInput[]>(
+    initial?.variants.map((v) => ({ id: v.id, unitId: v.unitId, stock: v.stock })) ?? [],
+  )
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
+    if (variants.length === 0) {
+      window.alert('Add at least one size variant before saving.')
+      return
+    }
+    if (variants.some((v) => !v.unitId)) {
+      window.alert('Every variant must have a size selected.')
+      return
+    }
+
     const trimmedSlug = slug.trim()
     const trimmedDescription = description.trim()
     const priceNumber = Number(price)
-    const stockNumber = Number(stock)
+    const trimmedCardImage = cardImage.trim()
+    const trimmedMainImage = mainImage.trim()
+    const cleanedGallery = galleryImages.map((url) => url.trim()).filter((url) => url.length > 0)
 
     const common = {
       name: name.trim(),
       sku: sku.trim(),
       price: priceNumber,
       isActive,
+      cardImage: trimmedCardImage,
+      mainImage: trimmedMainImage,
+      galleryImages: cleanedGallery,
+      variants,
       ...(trimmedSlug ? { slug: trimmedSlug } : {}),
       ...(trimmedDescription ? { description: trimmedDescription } : {}),
     }
 
     if (props.mode === 'create') {
-      props.onSubmit({
-        ...common,
-        stock: stockNumber,
-      })
+      props.onSubmit(common)
       return
     }
 
@@ -83,7 +101,7 @@ export function ProductForm(props: Props) {
           maxLength={150}
           minLength={3}
           onChange={(event) => setName(event.target.value)}
-          placeholder="Wireless headphones"
+          placeholder="Classic linen shirt"
           required
           type="text"
           value={name}
@@ -121,7 +139,7 @@ export function ProductForm(props: Props) {
           maxLength={120}
           onChange={(event) => setSlug(event.target.value.toLowerCase())}
           pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
-          placeholder="wireless-headphones"
+          placeholder="classic-linen-shirt"
           type="text"
           value={slug}
         />
@@ -138,28 +156,6 @@ export function ProductForm(props: Props) {
           step={0.01}
           type="number"
           value={price}
-        />
-      </Field>
-
-      <Field
-        label="Stock"
-        htmlFor="product-stock"
-        hint={
-          props.mode === 'edit'
-            ? 'Use "Adjust stock" to change inventory (it logs a movement).'
-            : 'Starting quantity for this product.'
-        }
-      >
-        <input
-          className={inputClasses}
-          disabled={props.mode === 'edit'}
-          id="product-stock"
-          min={0}
-          onChange={(event) => setStock(event.target.value)}
-          placeholder="0"
-          step={1}
-          type="number"
-          value={stock}
         />
       </Field>
 
@@ -192,6 +188,17 @@ export function ProductForm(props: Props) {
           />
         </Field>
       </div>
+
+      <ProductImageFields
+        cardImage={cardImage}
+        galleryImages={galleryImages}
+        mainImage={mainImage}
+        onCardImageChange={setCardImage}
+        onGalleryImagesChange={setGalleryImages}
+        onMainImageChange={setMainImage}
+      />
+
+      <ProductVariantsField onChange={setVariants} variants={variants} />
 
       {props.error ? (
         <p className="lg:col-span-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-200">

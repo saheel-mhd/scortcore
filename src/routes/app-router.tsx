@@ -14,6 +14,8 @@ const ProductsCreatePage = lazy(() => import('@/pages/products-create-page'))
 const ProductsEditPage = lazy(() => import('@/pages/products-edit-page'))
 const OrdersListPage = lazy(() => import('@/pages/orders-list-page'))
 const OrderDetailPage = lazy(() => import('@/pages/order-detail-page'))
+const UnitsPage = lazy(() => import('@/pages/units-page'))
+const LayoutPage = lazy(() => import('@/pages/layout-page'))
 
 export function AppRouter() {
   return (
@@ -35,6 +37,8 @@ export function AppRouter() {
           <Route path={routePaths.productsEdit} element={<ProductsEditPage />} />
           <Route path={routePaths.orders} element={<OrdersListPage />} />
           <Route path={routePaths.ordersDetail} element={<OrderDetailPage />} />
+          <Route path={routePaths.units} element={<UnitsPage />} />
+          <Route path={routePaths.layout} element={<LayoutPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

@@ -19,7 +19,6 @@ const sortOptions: { label: string; value: ProductSortField }[] = [
   { label: 'Updated', value: 'updatedAt' },
   { label: 'Name', value: 'name' },
   { label: 'Price', value: 'price' },
-  { label: 'Stock', value: 'stock' },
 ]
 
 const activeOptions = [

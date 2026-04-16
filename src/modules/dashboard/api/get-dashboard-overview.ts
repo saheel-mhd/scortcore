@@ -1,16 +1,16 @@
 import { queryOptions } from '@tanstack/react-query'
 
-import type { DashboardOverview } from '@/types/dashboard'
+import { apiClient, type ApiEnvelope } from '@/api/client'
+import type { DashboardSummary } from '@/modules/dashboard/types/dashboard.types'
 
-export const dashboardOverviewQueryOptions = queryOptions({
-  queryKey: ['dashboard-overview'],
-  queryFn: async (): Promise<DashboardOverview> => {
-    const response = await fetch('/dashboard-overview.json')
+export const dashboardKeys = {
+  summary: ['dashboard', 'summary'] as const,
+}
 
-    if (!response.ok) {
-      throw new Error(`Failed to load dashboard overview: ${response.status}`)
-    }
-
-    return (await response.json()) as DashboardOverview
+export const dashboardSummaryQueryOptions = queryOptions({
+  queryKey: dashboardKeys.summary,
+  queryFn: async (): Promise<DashboardSummary> => {
+    const response = await apiClient.get<ApiEnvelope<DashboardSummary>>('/admin/dashboard')
+    return response.data.data
   },
 })

@@ -1,11 +1,18 @@
 export type OrderStatus = 'pending' | 'paid' | 'shipped' | 'delivered'
 
 export type OrderItemSnapshot = {
+  productVariantId?: string
   productId: string
   name: string
   slug: string
   sku: string
-  price: number
+  unitId?: string
+  unitName?: string
+  unitShortName?: string
+  unitCategoryId?: string
+  unitCategoryName?: string
+  unitPrice?: number
+  price?: number
   quantity: number
   lineTotal?: number
 }
