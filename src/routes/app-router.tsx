@@ -15,7 +15,9 @@ const ProductsEditPage = lazy(() => import('@/pages/products-edit-page'))
 const OrdersListPage = lazy(() => import('@/pages/orders-list-page'))
 const OrderDetailPage = lazy(() => import('@/pages/order-detail-page'))
 const UnitsPage = lazy(() => import('@/pages/units-page'))
+const CouponsPage = lazy(() => import('@/pages/coupons-page'))
 const LayoutPage = lazy(() => import('@/pages/layout-page'))
+const ShopLayoutPage = lazy(() => import('@/pages/shop-layout-page'))
 
 export function AppRouter() {
   return (
@@ -38,7 +40,9 @@ export function AppRouter() {
           <Route path={routePaths.orders} element={<OrdersListPage />} />
           <Route path={routePaths.ordersDetail} element={<OrderDetailPage />} />
           <Route path={routePaths.units} element={<UnitsPage />} />
+          <Route path={routePaths.coupons} element={<CouponsPage />} />
           <Route path={routePaths.layout} element={<LayoutPage />} />
+          <Route path={routePaths.layoutShop} element={<ShopLayoutPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
