@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Info, Plus, Search } from 'lucide-react'
+import { ArrowLeft, Info, Plus, Search } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 import { extractErrorMessage } from '@/api/client'
 import { usePageTitle } from '@/hooks/use-page-title'
@@ -13,6 +14,7 @@ import {
   useUpdateShopSection,
 } from '@/modules/shop-layout/hooks/use-shop-sections'
 import type { ShopRowType, ShopSection } from '@/modules/shop-layout/types/shop-section.types'
+import { routePaths } from '@/routes/paths'
 import { PageHeader } from '@/shared/page-header'
 import { PanelCard } from '@/shared/panel-card'
 import { Button } from '@/ui/button'
@@ -87,8 +89,15 @@ export default function ShopLayoutPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      <Link
+        to={routePaths.layout}
+        className="inline-flex items-center gap-2 text-sm text-slate-400 transition hover:text-white"
+      >
+        <ArrowLeft className="size-4" />
+        Layout
+      </Link>
+
       <PageHeader
-        badge="Shop"
         title="Shop Layout"
         description="Build the shop page layout row by row. Reorder, show/hide, or swap rows when new products arrive."
         action={

@@ -18,7 +18,6 @@ export default function ProductsCreatePage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        badge="Catalog"
         title="New product"
         description="Add a product to the catalog. Stock is tracked as an inventory movement."
         action={

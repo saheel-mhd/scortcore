@@ -57,7 +57,6 @@ export default function OrdersListPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        badge="Operations"
         title="Orders"
         description="Review incoming orders and advance them through the fulfillment pipeline."
       />

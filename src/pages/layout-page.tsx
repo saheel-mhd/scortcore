@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Plus } from 'lucide-react'
+import { ArrowLeft, Plus } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 import { extractErrorMessage } from '@/api/client'
 import { usePageTitle } from '@/hooks/use-page-title'
@@ -13,6 +14,7 @@ import {
   useUpdateHomepageSection,
 } from '@/modules/layout/hooks/use-homepage-sections'
 import type { HomepageSection, SectionType } from '@/modules/layout/types/homepage-section.types'
+import { routePaths } from '@/routes/paths'
 import { PageHeader } from '@/shared/page-header'
 import { PanelCard } from '@/shared/panel-card'
 import { Button } from '@/ui/button'
@@ -87,9 +89,16 @@ export default function LayoutPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      <Link
+        to={routePaths.layout}
+        className="inline-flex items-center gap-2 text-sm text-slate-400 transition hover:text-white"
+      >
+        <ArrowLeft className="size-4" />
+        Layout
+      </Link>
+
       <PageHeader
-        badge="Store"
-        title="Layout"
+        title="Homepage Layout"
         description="Curate the store home page with product collections and banners. Add as many sections as you need."
         action={
           <Button onClick={openChooser}>

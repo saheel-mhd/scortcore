@@ -70,7 +70,6 @@ export default function CouponsPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        badge="Marketing"
         title="Coupons"
         description="Create and manage discount codes. Customers apply them at checkout."
         action={

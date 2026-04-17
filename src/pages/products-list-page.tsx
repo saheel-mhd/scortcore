@@ -62,7 +62,6 @@ export default function ProductsListPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        badge="Catalog"
         title="Products"
         description="Manage the products powering the store and inventory."
       />

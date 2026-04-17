@@ -41,7 +41,6 @@ function DashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        badge="Admin"
         title="Dashboard"
         description="Real-time snapshot of catalog, orders, customers, and revenue."
         action={

@@ -1,4 +1,4 @@
-import { BarChart3, LayoutDashboard, LayoutGrid, LogOut, Menu, Package, Receipt, Ruler, ShieldCheck, Store, Tag, X } from 'lucide-react'
+import { BarChart3, LayoutDashboard, LayoutGrid, LogOut, Menu, Package, Receipt, Ruler, Settings, ShieldCheck, Tag, X } from 'lucide-react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 
 import { Button } from '@/ui/button'
@@ -35,12 +35,12 @@ const navigationItems = [
   {
     href: routePaths.layout,
     icon: LayoutGrid,
-    label: 'Homepage Layout',
+    label: 'Layout',
   },
   {
-    href: routePaths.layoutShop,
-    icon: Store,
-    label: 'Shop Layout',
+    href: routePaths.settings,
+    icon: Settings,
+    label: 'Settings',
   },
 ] as const
 

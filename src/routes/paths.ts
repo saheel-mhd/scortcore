@@ -9,5 +9,9 @@ export const routePaths = {
   units: '/units',
   coupons: '/coupons',
   layout: '/layout',
-  layoutShop: '/layout-shop',
+  layoutHome: '/layout/homepage',
+  layoutShop: '/layout/shop',
+  settings: '/settings',
+  users: '/settings/users',
+  roles: '/settings/roles',
 } as const

@@ -73,7 +73,6 @@ export default function UnitsPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        badge="Catalog"
         title="Units"
         description="Define measurement systems (Alpha, Inches, Milliliters) and the units inside them."
       />
