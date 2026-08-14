@@ -1,48 +1,30 @@
-import { BarChart3, LayoutDashboard, LayoutGrid, LogOut, Menu, Package, Receipt, Ruler, Settings, ShieldCheck, Tag, X } from 'lucide-react'
+import { Boxes, LayoutDashboard, LayoutGrid, LogOut, Menu, Package, Receipt, Ruler, Settings, ShieldCheck, Tag, Truck, X, type LucideIcon } from 'lucide-react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-
 import { Button } from '@/ui/button'
+import { resolvePermissions } from '@/modules/auth/permissions'
 import { routePaths } from '@/routes/paths'
 import { useAuthStore } from '@/store/auth-store'
 import { useUiStore } from '@/store/ui-store'
+import type { PermissionModule } from '@/types/auth'
 
-const navigationItems = [
-  {
-    href: routePaths.dashboard,
-    icon: LayoutDashboard,
-    label: 'Dashboard',
-  },
-  {
-    href: routePaths.products,
-    icon: Package,
-    label: 'Products',
-  },
-  {
-    href: routePaths.orders,
-    icon: Receipt,
-    label: 'Orders',
-  },
-  {
-    href: routePaths.units,
-    icon: Ruler,
-    label: 'Units',
-  },
-  {
-    href: routePaths.coupons,
-    icon: Tag,
-    label: 'Coupons',
-  },
-  {
-    href: routePaths.layout,
-    icon: LayoutGrid,
-    label: 'Layout',
-  },
-  {
-    href: routePaths.settings,
-    icon: Settings,
-    label: 'Settings',
-  },
-] as const
+// `permission` mirrors the gate on the matching route and API endpoint, so a
+// link only appears when the request behind it will actually succeed.
+const navigationItems: {
+  href: string
+  icon: LucideIcon
+  label: string
+  permission: PermissionModule
+}[] = [
+  { href: routePaths.dashboard, icon: LayoutDashboard, label: 'Dashboard', permission: 'dashboard' },
+  { href: routePaths.products, icon: Package, label: 'Products', permission: 'products' },
+  { href: routePaths.orders, icon: Receipt, label: 'Orders', permission: 'orders' },
+  { href: routePaths.inventory, icon: Boxes, label: 'Inventory', permission: 'products' },
+  { href: routePaths.purchaseOrders, icon: Truck, label: 'Purchase orders', permission: 'products' },
+  { href: routePaths.units, icon: Ruler, label: 'Units', permission: 'units' },
+  { href: routePaths.coupons, icon: Tag, label: 'Coupons', permission: 'coupons' },
+  { href: routePaths.layout, icon: LayoutGrid, label: 'Layout', permission: 'layout' },
+  { href: routePaths.settings, icon: Settings, label: 'Settings', permission: 'settings' },
+]
 
 export function DashboardLayout() {
   const isSidebarOpen = useUiStore((state) => state.isSidebarOpen)
@@ -51,11 +33,15 @@ export function DashboardLayout() {
   const user = useAuthStore((state) => state.user)
   const signOut = useAuthStore((state) => state.signOut)
   const navigate = useNavigate()
-
   const handleSignOut = () => {
     signOut()
     navigate(routePaths.login, { replace: true })
   }
+
+  const permissions = user ? resolvePermissions(user.role, user.permissions) : null
+  const visibleNavigationItems = permissions
+    ? navigationItems.filter((item) => permissions[item.permission])
+    : []
 
   return (
     <div className="mx-auto flex min-h-screen w-full gap-6 px-4 py-4 sm:px-6 lg:px-8">
@@ -83,7 +69,7 @@ export function DashboardLayout() {
         </div>
 
         <nav className="mt-8 space-y-2">
-          {navigationItems.map((item) => {
+          {visibleNavigationItems.map((item) => {
             const Icon = item.icon
 
             return (
@@ -129,6 +115,19 @@ export function DashboardLayout() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
+        <header className="flex items-center gap-3 py-2 lg:hidden">
+          <Button
+            aria-expanded={isSidebarOpen}
+            aria-label="Open navigation"
+            onClick={toggleSidebar}
+            size="icon-sm"
+            variant="outline"
+          >
+            <Menu />
+          </Button>
+          <span className="text-sm font-semibold text-white">ScortCore</span>
+        </header>
+
         <main className="min-w-0 flex-1 py-6">
           <Outlet />
         </main>

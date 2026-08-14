@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-
+import { apiClient, type ApiEnvelope } from '@/api/client'
 import type { AuthSession, AuthStatus, AuthUser } from '@/types/auth'
 
 type AuthStore = {
@@ -49,6 +49,18 @@ export const useAuthStore = create<AuthStore>()(
       }),
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true)
+
+        if (state?.accessToken && state.status === 'authenticated') {
+          apiClient
+            .get<ApiEnvelope<AuthUser>>('/auth/me')
+            .then((response) => {
+              state.setSession({
+                accessToken: state.accessToken!,
+                user: response.data.data,
+              })
+            })
+            .catch(() => {})
+        }
       },
     }
   )

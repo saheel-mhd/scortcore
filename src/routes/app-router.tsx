@@ -1,6 +1,5 @@
 import { Suspense, lazy } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
-
 import { AppLoader } from '@/components/app-loader'
 import { DashboardLayout } from '@/layouts/dashboard-layout'
 import { RequireAuth } from '@/routes/require-auth'
@@ -17,6 +16,8 @@ const ProductsCreatePage = lazy(() => import('@/pages/products-create-page'))
 const ProductsEditPage = lazy(() => import('@/pages/products-edit-page'))
 const OrdersListPage = lazy(() => import('@/pages/orders-list-page'))
 const OrderDetailPage = lazy(() => import('@/pages/order-detail-page'))
+const InventoryPage = lazy(() => import('@/pages/inventory-page'))
+const PurchaseOrdersPage = lazy(() => import('@/pages/purchase-orders-page'))
 const UnitsPage = lazy(() => import('@/pages/units-page'))
 const CouponsPage = lazy(() => import('@/pages/coupons-page'))
 const LayoutHubPage = lazy(() => import('@/pages/layout-hub-page'))
@@ -37,20 +38,134 @@ export function AppRouter() {
           }
         >
           <Route index element={<Navigate replace to={routePaths.dashboard} />} />
-          <Route path={routePaths.dashboard} element={<DashboardPage />} />
-          <Route path={routePaths.products} element={<ProductsListPage />} />
-          <Route path={routePaths.productsNew} element={<ProductsCreatePage />} />
-          <Route path={routePaths.productsEdit} element={<ProductsEditPage />} />
-          <Route path={routePaths.orders} element={<OrdersListPage />} />
-          <Route path={routePaths.ordersDetail} element={<OrderDetailPage />} />
-          <Route path={routePaths.units} element={<UnitsPage />} />
-          <Route path={routePaths.coupons} element={<CouponsPage />} />
-          <Route path={routePaths.layout} element={<LayoutHubPage />} />
-          <Route path={routePaths.layoutHome} element={<LayoutPage />} />
-          <Route path={routePaths.layoutShop} element={<ShopLayoutPage />} />
-          <Route path={routePaths.settings} element={<SettingsPage />} />
-          <Route path={routePaths.users} element={<UsersPage />} />
-          <Route path={routePaths.roles} element={<RolesPage />} />
+          <Route
+            path={routePaths.dashboard}
+            element={
+              <RequireAuth permission="dashboard">
+                <DashboardPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path={routePaths.products}
+            element={
+              <RequireAuth permission="products">
+                <ProductsListPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path={routePaths.productsNew}
+            element={
+              <RequireAuth permission="products">
+                <ProductsCreatePage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path={routePaths.productsEdit}
+            element={
+              <RequireAuth permission="products">
+                <ProductsEditPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path={routePaths.orders}
+            element={
+              <RequireAuth permission="orders">
+                <OrdersListPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path={routePaths.ordersDetail}
+            element={
+              <RequireAuth permission="orders">
+                <OrderDetailPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path={routePaths.inventory}
+            element={
+              <RequireAuth permission="products">
+                <InventoryPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path={routePaths.purchaseOrders}
+            element={
+              <RequireAuth permission="products">
+                <PurchaseOrdersPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path={routePaths.units}
+            element={
+              <RequireAuth permission="units">
+                <UnitsPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path={routePaths.coupons}
+            element={
+              <RequireAuth permission="coupons">
+                <CouponsPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path={routePaths.layout}
+            element={
+              <RequireAuth permission="layout">
+                <LayoutHubPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path={routePaths.layoutHome}
+            element={
+              <RequireAuth permission="layout">
+                <LayoutPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path={routePaths.layoutShop}
+            element={
+              <RequireAuth permission="layout">
+                <ShopLayoutPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path={routePaths.settings}
+            element={
+              <RequireAuth permission="settings">
+                <SettingsPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path={routePaths.users}
+            element={
+              <RequireAuth permission="settings">
+                <UsersPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path={routePaths.roles}
+            element={
+              <RequireAuth permission="settings">
+                <RolesPage />
+              </RequireAuth>
+            }
+          />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

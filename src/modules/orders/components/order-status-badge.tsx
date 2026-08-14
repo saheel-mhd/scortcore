@@ -5,6 +5,7 @@ const styles: Record<OrderStatus, string> = {
   paid: 'bg-sky-500/10 text-sky-300',
   shipped: 'bg-indigo-500/10 text-indigo-300',
   delivered: 'bg-emerald-500/10 text-emerald-300',
+  cancelled: 'bg-slate-500/10 text-slate-400',
 }
 
 export function OrderStatusBadge({ status }: { status: OrderStatus }) {

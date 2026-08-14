@@ -1,35 +1,26 @@
 import { useState } from 'react'
 import { ArrowLeft, Loader2, Package } from 'lucide-react'
 import { Link, Navigate, useParams } from 'react-router-dom'
-
 import { extractErrorMessage } from '@/api/client'
 import { usePageTitle } from '@/hooks/use-page-title'
 import { OrderStatusBadge } from '@/modules/orders/components/order-status-badge'
+import { useCancelOrder } from '@/modules/orders/hooks/use-cancel-order'
 import { useOrder } from '@/modules/orders/hooks/use-order'
 import { useUpdateOrderStatus } from '@/modules/orders/hooks/use-update-order-status'
-import {
-  ORDER_STATUS_TRANSITIONS,
-  type OrderStatus,
-} from '@/modules/orders/types/order.types'
+import { ORDER_STATUS_TRANSITIONS, type OrderStatus,} from '@/modules/orders/types/order.types'
 import { routePaths } from '@/routes/paths'
 import { PageHeader } from '@/shared/page-header'
 import { PanelCard } from '@/shared/panel-card'
 import { Button } from '@/ui/button'
 
-const currencyFormatter = new Intl.NumberFormat(undefined, {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-})
-
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
-  dateStyle: 'long',
-  timeStyle: 'short',
-})
+const currencyFormatter = new Intl.NumberFormat(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2, })
+const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: 'long', timeStyle: 'short', })
 
 export default function AdminOrderDetailPage() {
   const { id = '' } = useParams<{ id: string }>()
   const query = useOrder(id)
   const mutation = useUpdateOrderStatus()
+  const cancelMutation = useCancelOrder()
   const [nextStatus, setNextStatus] = useState<OrderStatus | ''>('')
 
   usePageTitle(query.data ? `Order ${query.data.orderNumber}` : 'Order')
@@ -38,13 +29,27 @@ export default function AdminOrderDetailPage() {
     return <Navigate replace to={routePaths.orders} />
   }
 
-  const allowedTransitions = query.data
-    ? ORDER_STATUS_TRANSITIONS[query.data.status]
-    : []
+  const allowedTransitions = query.data ? ORDER_STATUS_TRANSITIONS[query.data.status] : []
 
   const handleAdvance = () => {
     if (!nextStatus || !query.data) return
     mutation.mutate({ id: query.data.id, status: nextStatus }, { onSuccess: () => setNextStatus('') })
+  }
+
+  const canCancel =
+    query.data?.status === 'pending' || query.data?.status === 'paid'
+
+  const handleCancel = () => {
+    if (!query.data) return
+    if (
+      !window.confirm(
+        `Cancel order ${query.data.orderNumber}? Stock will be returned and any coupon use released.`,
+      )
+    ) {
+      return
+    }
+
+    cancelMutation.mutate({ id: query.data.id })
   }
 
   return (
@@ -176,9 +181,39 @@ export default function AdminOrderDetailPage() {
                   </div>
                 ) : (
                   <p className="rounded-lg border border-white/5 bg-white/5 px-3 py-2 text-xs text-slate-300">
-                    This order is in a terminal state and cannot advance further.
+                    {query.data.status === 'cancelled'
+                      ? 'This order was cancelled and its stock has been returned.'
+                      : 'This order is in a terminal state and cannot advance further.'}
                   </p>
                 )}
+
+                {canCancel ? (
+                  <div className="flex flex-col gap-2 border-t border-white/5 pt-3">
+                    {cancelMutation.error ? (
+                      <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-200">
+                        {extractErrorMessage(cancelMutation.error, 'Unable to cancel order')}
+                      </p>
+                    ) : null}
+
+                    <Button
+                      disabled={cancelMutation.isPending}
+                      onClick={handleCancel}
+                      variant="destructive"
+                    >
+                      {cancelMutation.isPending ? (
+                        <>
+                          <Loader2 className="animate-spin" />
+                          Cancelling…
+                        </>
+                      ) : (
+                        'Cancel order'
+                      )}
+                    </Button>
+                    <p className="text-xs text-slate-500">
+                      Returns stock to inventory and releases any coupon use.
+                    </p>
+                  </div>
+                ) : null}
               </div>
             </PanelCard>
 
@@ -187,6 +222,42 @@ export default function AdminOrderDetailPage() {
                 <p className="text-white">{query.data.customer?.email ?? '—'}</p>
                 <p className="text-xs text-slate-500">{query.data.customerId}</p>
               </div>
+            </PanelCard>
+
+            <PanelCard title="Delivery address">
+              {query.data.shippingAddress ? (
+                <div className="flex flex-col gap-1 text-sm">
+                  <p className="text-white">
+                    {query.data.shippingAddress.fullName}
+                    {query.data.shippingAddress.label ? (
+                      <span className="ml-2 text-xs uppercase tracking-[0.2em] text-slate-500">
+                        {query.data.shippingAddress.label}
+                      </span>
+                    ) : null}
+                  </p>
+                  <p className="text-slate-300">
+                    {[
+                      query.data.shippingAddress.line1,
+                      query.data.shippingAddress.line2,
+                      query.data.shippingAddress.city,
+                      query.data.shippingAddress.state,
+                      query.data.shippingAddress.postalCode,
+                      query.data.shippingAddress.country,
+                    ]
+                      .filter(Boolean)
+                      .join(', ')}
+                  </p>
+                  {query.data.shippingAddress.phone ? (
+                    <p className="text-xs text-slate-500">
+                      {query.data.shippingAddress.phone}
+                    </p>
+                  ) : null}
+                </div>
+              ) : (
+                <p className="text-sm text-slate-500">
+                  No address recorded — placed before delivery addresses were captured.
+                </p>
+              )}
             </PanelCard>
 
             <PanelCard title="Timeline">

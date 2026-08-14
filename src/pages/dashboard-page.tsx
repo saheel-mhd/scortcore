@@ -1,23 +1,9 @@
 import { Link } from 'react-router-dom'
-import {
-  Activity,
-  AlertTriangle,
-  DollarSign,
-  Package,
-  Receipt,
-  RefreshCw,
-  Users,
-} from 'lucide-react'
-
+import { Activity, AlertTriangle, DollarSign, Package, Receipt, RefreshCw, Users,} from 'lucide-react'
 import { extractErrorMessage } from '@/api/client'
 import { usePageTitle } from '@/hooks/use-page-title'
 import { useDashboardSummary } from '@/modules/dashboard/hooks/use-dashboard-overview'
-import type {
-  DashboardLowStock,
-  DashboardMetrics,
-  DashboardOrderStatus,
-  DashboardRecentOrder,
-} from '@/modules/dashboard/types/dashboard.types'
+import type { DashboardLowStock, DashboardMetrics, DashboardOrderStatus, DashboardRecentOrder,} from '@/modules/dashboard/types/dashboard.types'
 import { routePaths } from '@/routes/paths'
 import { PageHeader } from '@/shared/page-header'
 import { PanelCard } from '@/shared/panel-card'
@@ -94,6 +80,15 @@ function DashboardPage() {
                 query.data.metrics.lowStockCount > 0
                   ? `${query.data.metrics.lowStockCount} variant${query.data.metrics.lowStockCount === 1 ? '' : 's'} at or below the threshold.`
                   : 'Everything is well stocked.'
+              }
+              action={
+                query.data.metrics.lowStockCount > 0 ? (
+                  <Link to={`${routePaths.inventory}?view=low`}>
+                    <Button size="sm" variant="outline">
+                      Restock
+                    </Button>
+                  </Link>
+                ) : null
               }
             >
               <LowStockList items={query.data.lowStock} />
